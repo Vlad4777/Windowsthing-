@@ -132,9 +132,10 @@ async def get_current_media():
                             position = int(time.time()) - track_start_time
                         else:
                             position = 0
-                            
-                if reported_position_sec == duration_sec:
+
+                if reported_position_sec == duration_sec or reported_position_sec < 1: 
                     position_str = format_mmss(position)
+                    
                 else:
                     position_str = format_mmss(reported_position_sec)
 
@@ -156,7 +157,6 @@ async def get_current_media():
                             playback,
                             playprog
                         ]
-                        print(data)
 
                 payload = "|".join(data) + "\n"
 
@@ -165,7 +165,6 @@ async def get_current_media():
                           ser.write(payload.encode("utf-8", errors="ignore"))
                       except serial.serialutil.SerialException:
                           icon.notify("COM Port Error")
-                          selectedport = select_port()
 
                 track = info.title
 
