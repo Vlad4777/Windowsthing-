@@ -88,7 +88,7 @@ If you want to improve the project by yourself or fix bugs, feel free to do so.Â
 - Housing cover  
 - Encoder knob  
 
-> STL files are available on **Printables**.  
+> STL files are available on [Printables](https://www.printables.com/model/1524846-windowsthing-a-open-source-media-controller).  
 > Printed in **PLA**, but other materials can be used.
 
 ### Other Parts
