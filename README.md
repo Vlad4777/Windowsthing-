@@ -59,7 +59,7 @@ The Arduino then displays the media information on an **SSD1306 OLED display** a
 ---
 
 ## Assembly
-1. Solder all electronic components according to the wiring diagram
+1. Solder all electronic components according to the [wiring diagram](https://github.com/Vlad4777/Windowsthing-/blob/main/wiring%20diagram.png)
 2. Flash the Arduino firmware
 3. Assemble the 3D printed housing
 4. Install the Windows host application
