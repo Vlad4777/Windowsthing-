@@ -5,23 +5,23 @@ A Arduino based open source media controller for Windows that shows currently pl
 
 Parts needed for assembly:
 
-Electronics:
+##Electronics:
   -Arduino Pro Micro
   -Rotary encoder with 6mm knurl shaft and integrated push button
   -ssd1306 128x32 i2c oled display
   -Flexible wires (I used 28AWG/ 0.08 mm²)
   
-3d printed parts:
+##3d printed parts:
   -Housing 
   -Housing cover 
   -Encoder knob
   Aviable on printables. Printed in pla, other materials can be used. 
 
-Other parts:
+##Other parts:
   -4x Countersunk screw M3x8
   -4x M3 Nuts
 
-Controls:
+##Controls:
  Press - play/pause
  Rotate right - volume up
  Rotate left - volume down
