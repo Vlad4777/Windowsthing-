@@ -22,6 +22,44 @@ The desktop host application retrieves information about the currently playing m
 
 The Arduino then displays the media information on an **SSD1306 OLED display** and handles user input from the rotary encoder.
 
+PLEASE NOTE!
+
+This project is still in development and may have bugs!
+
+Known bugs:
+
+
+
+
+
+Some apps like Firefox dont support timeline reporting, so the timeline has to be estimated.  May not be accurate. 
+
+
+
+Title scrolling randomly slows down. 
+
+
+
+If 2 or more applications play media, the display switches between the applications fast
+
+
+
+I am happy if you report any bugs you found or improvement ideas to me.
+
+You can contact me directly on:
+
+
+
+
+
+discord: @pablobee
+
+
+
+telegram: @aosp_user
+
+If you want to improve the project by yourself or fix bugs, feel free to do so. 
+
 ---
 
 ## Controls
