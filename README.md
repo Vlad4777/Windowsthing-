@@ -25,7 +25,7 @@ The Arduino then displays the media information on an **SSD1306 OLED display** a
 ---
 ## PLEASE NOTE!
 
-This project is still in development and may have bugs!**
+This project is still in development and may have bugs!
 
 Known bugs:
 
