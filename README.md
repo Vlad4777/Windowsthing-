@@ -75,7 +75,7 @@ If you want to improve the project by yourself or fix bugs, feel free to do so.Â
 
 ---
 
---
+---
 ## Run on startup 
 - open exporer
 - go to ##shell:startup
