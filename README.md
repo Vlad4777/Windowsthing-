@@ -23,7 +23,7 @@ The desktop host application retrieves information about the currently playing m
 The Arduino then displays the media information on an **SSD1306 OLED display** and handles user input from the rotary encoder.
 
 ---
-## **PLEASE NOTE!
+## PLEASE NOTE!
 
 This project is still in development and may have bugs!**
 
