@@ -75,6 +75,12 @@ If you want to improve the project by yourself or fix bugs, feel free to do so.Â
 
 ---
 
+--
+## Run on startup 
+- open exporer
+- go to ##shell:startup
+- create shortcut for windowsthing.exe
+
 ## Parts Needed
 
 ### Electronics
@@ -101,7 +107,7 @@ If you want to improve the project by yourself or fix bugs, feel free to do so.Â
 1. Solder all electronic components according to the [wiring diagram](https://github.com/Vlad4777/Windowsthing-/blob/main/wiring%20diagram.png)
 2. Flash the Arduino firmware
 3. Assemble the 3D printed housing
-4. Install the Windows host application
+4. Install the Windows host application 
 5. Connect via USB
 
 ---
