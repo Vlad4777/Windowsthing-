@@ -89,7 +89,7 @@ void loop() {
   noInterrupts();
   currentEncoder = encoderChange;
   interrupts(); 
-  Serial.println(currentEncoder);
+
   
   if (currentEncoder < lastEncoderChange){
     if (buttonState == LOW){
