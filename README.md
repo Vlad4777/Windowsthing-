@@ -113,9 +113,9 @@ If you want to improve the project by yourself or fix bugs, feel free to do so.Â
 ---
 ## Building host app yourself
 1. Install Python and all libraries used **(if pip fails to install winrt, use a Python version that has pre built versions of winrt, I used Python 3.9)**
-2. Install PyInstaller using pip install pyinstaller
+2. Install PyInstaller using ```pip install pyinstaller```
 3. Run cmd in your project folder containing windowsthing.py, icon.ico, config.json
-4. PyInstaller windowsthing.py --onefile --icon=icon.ico --noconsole
+4. Run ```PyInstaller windowsthing.py --onefile --icon=icon.ico --noconsole```
 
 ## License
 Open source â€“ see the LICENSE file for details.
