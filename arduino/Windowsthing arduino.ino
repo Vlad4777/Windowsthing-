@@ -1,5 +1,6 @@
 #include <SPI.h>
 #include <Wire.h>
+#include <avr/wdt.h>
 #include<U8g2lib.h>
 #include<HID-Project.h>
 
@@ -18,6 +19,11 @@ int currentEncoder = 0;
 
 bool buttonState = HIGH;
 bool lastButtonState = HIGH;
+unsigned long pressStartTime = 0;
+
+unsigned long lastSerialTime = 0;
+const unsigned long displayTimeout = 5000;
+bool displayOn = true;
 
 
 String title = "";
@@ -48,6 +54,7 @@ bool containsCyrillic(const String& s) {
 }
 
 void setup() {
+  wdt_disable();
   pinMode(swPin, INPUT_PULLUP);
   pinMode(pinA, INPUT_PULLUP);
   pinMode(pinB, INPUT_PULLUP);
@@ -62,6 +69,7 @@ void setup() {
 
 void loop() {
   if (Serial.available()) {
+    
     String line = Serial.readStringUntil('\n');
 
     int index1 = line.indexOf('|');
@@ -75,6 +83,13 @@ void loop() {
       playback = line.substring(index2 + 1, index3);
       timeline = line.substring(index3 + 1); 
       
+      lastSerialTime = millis();
+    
+      if (displayOn == false){
+        displayOn = true;
+        u8g2.setPowerSave(0);
+      }
+    
     }else{
       u8g2.setFontMode(1);
       u8g2.setBitmapMode(1);
@@ -86,10 +101,16 @@ void loop() {
 
   buttonState = digitalRead(swPin);
 
+  if (displayOn == true and millis() - lastSerialTime > displayTimeout){
+    u8g2.clearBuffer();
+    u8g2.sendBuffer();
+    u8g2.setPowerSave(1);
+    displayOn = false; 
+  }
+
   noInterrupts();
   currentEncoder = encoderChange;
   interrupts(); 
-
   
   if (currentEncoder < lastEncoderChange){
     if (buttonState == LOW){
@@ -104,9 +125,21 @@ void loop() {
       Consumer.write(MEDIA_VOLUME_UP); 
     }
   }else if (buttonState == LOW && lastButtonState == HIGH){
+      pressStartTime = millis();
       Consumer.write(MEDIA_PLAY_PAUSE);
+   }else if(buttonState == LOW && millis() - pressStartTime > 5000){
+    Serial.end();
+    u8g2.clearBuffer();
+    u8g2.setPowerSave(0);
+    u8g2.setFontMode(1);
+    u8g2.setBitmapMode(1);
+    u8g2.setFont(u8g2_font_profont17_tr);
+    u8g2.drawStr(10, 21, "Rebooting");
+    u8g2.sendBuffer();
+    delay(1000);
+    wdt_enable(WDTO_15MS);
+    while (1) {}
    }
-  
   
   lastButtonState = buttonState;
   lastEncoderChange = currentEncoder; 
