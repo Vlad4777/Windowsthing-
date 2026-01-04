@@ -59,12 +59,13 @@ def refresh_ports(icon, item=None):
 def on_exit(icon, item):
     global running
     running = False
-    global ser 
-    try:
-        if ser.is_open:
-            ser.close()
-    except serial.serialutil.SerialException:
-        pass
+    global ser
+    if ser != None:
+        try:
+            if ser.is_open:
+                ser.close()
+        except serial.serialutil.SerialException:
+            pass
     
     icon.stop()
 
@@ -106,10 +107,16 @@ async def get_current_media():
     track = None
     track_start_time = None
     position = None
+    paused_position = None 
     while running:
         sessions = manager.get_sessions()
         if not sessions:
-            print("No media playing.")
+            if ser and ser.is_open:
+                      try:
+                          ser.write("No Media Playing|--|paused|0:00/0:00".encode("utf-8", errors="ignore"))
+                      except serial.serialutil.SerialException:
+                          icon.notify("COM Port Error")
+                          selectedport = select_port()
         else:
             for session in sessions:
                 info = await session.try_get_media_properties_async()
@@ -122,7 +129,7 @@ async def get_current_media():
                 duration_str = format_mmss(duration_sec)
 
 
-                
+            
                 if track != info.title:
                     track_start_time = int(time.time())
                     position = 0
@@ -133,7 +140,7 @@ async def get_current_media():
                         else:
                             position = 0
 
-                if reported_position_sec == duration_sec or reported_position_sec < 1: 
+                if reported_position_sec == duration_sec or reported_position_sec < 1 or int(reported_position_sec) == paused_position and playback_state == 4: 
                     position_str = format_mmss(position)
                     
                 else:
@@ -149,7 +156,7 @@ async def get_current_media():
                     playback = "playing"
                 elif playback_state == 5:
                     playback = "paused"
-                    
+                    paused_position = int(reported_position_sec)
                 if info:
                         data = [
                             info.title or "",
@@ -160,11 +167,13 @@ async def get_current_media():
 
                 payload = "|".join(data) + "\n"
 
+
                 if ser and ser.is_open:
                       try:
                           ser.write(payload.encode("utf-8", errors="ignore"))
                       except serial.serialutil.SerialException:
                           icon.notify("COM Port Error")
+                          selectedport = select_port()
 
                 track = info.title
 
