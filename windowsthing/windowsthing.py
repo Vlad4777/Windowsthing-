@@ -109,8 +109,8 @@ async def get_current_media():
     position = None
     paused_position = None 
     while running:
-        sessions = manager.get_sessions()
-        if not sessions:
+        session = manager.get_current_session()
+        if not session:
             if ser and ser.is_open:
                       try:
                           ser.write("No Media Playing|--|paused|0:00/0:00".encode("utf-8", errors="ignore"))
@@ -118,64 +118,79 @@ async def get_current_media():
                           icon.notify("COM Port Error")
                           selectedport = select_port()
         else:
-            for session in sessions:
-                info = await session.try_get_media_properties_async()
-                playback_state = session.get_playback_info().playback_status
-                playback = None
-                timeline = session.get_timeline_properties()
+            app_id = session.source_app_user_model_id
+            if ".exe" in app_id:
+                app_id = app_id.replace(".exe", "")
+            elif app_id == "308046B0AF4A39CB":
+                app_id = "Firefox"
+            elif "chrome" in app_id:
+                app_id = "Chrome"
+            
+            info = await session.try_get_media_properties_async()
+            title = info.title or ""
+            artist = info.artist or ""
+            playback_state = session.get_playback_info().playback_status
+            playback = None
+            timeline = session.get_timeline_properties()
+            
+            duration_sec = timeline.end_time.duration / 10_000_000
+            reported_position_sec = timeline.position.duration /10_000_000
+            duration_str = format_mmss(duration_sec)
+
+
+        
+            if track != info.title:
+                artist = app_id
+                track_start_time = int(time.time())
+                position = 0
+            else:
+                if playback_state == 4:
+                    if position < duration_sec:
+                        position = int(time.time()) - track_start_time
+                    else:
+                        position = 0
+
+            if (reported_position_sec == duration_sec
+                or reported_position_sec < 1
+                or int(reported_position_sec) == paused_position and playback_state == 4
+                or abs(reported_position_sec - position) > 5 and playback_state == 4
+                ):
+                position_str = format_mmss(position)
                 
-                duration_sec = timeline.end_time.duration / 10_000_000
-                reported_position_sec = timeline.position.duration /10_000_000
-                duration_str = format_mmss(duration_sec)
+            else:
+                position_str = format_mmss(reported_position_sec)
 
 
             
-                if track != info.title:
-                    track_start_time = int(time.time())
-                    position = 0
-                else:
-                    if playback_state == 4:
-                        if position < duration_sec:
-                            position = int(time.time()) - track_start_time
-                        else:
-                            position = 0
+            playprog = f"{position_str}/{duration_str}"
+            
+            
+            if playback_state == 4:
+                playback = "playing"
+            elif playback_state == 5:
+                playback = "paused"
+                paused_position = int(reported_position_sec)
+            if info:
+                    data = [
+                        title,
+                        artist,
+                        playback,
+                        playprog
+                    ]
 
-                if reported_position_sec == duration_sec or reported_position_sec < 1 or int(reported_position_sec) == paused_position and playback_state == 4: 
-                    position_str = format_mmss(position)
-                    
-                else:
-                    position_str = format_mmss(reported_position_sec)
+            payload = "|".join(data) + "\n"
 
-                
+            print(payload)
+            
 
+            if ser and ser.is_open:
+                  try:
+                      ser.write(payload.encode("utf-8", errors="ignore"))
+                  except serial.serialutil.SerialException:
+                      icon.notify("COM Port Error")
+                      selectedport = select_port()
 
-                playprog = f"{position_str}/{duration_str}"
-                
-                
-                if playback_state == 4:
-                    playback = "playing"
-                elif playback_state == 5:
-                    playback = "paused"
-                    paused_position = int(reported_position_sec)
-                if info:
-                        data = [
-                            info.title or "",
-                            info.artist or "",
-                            playback,
-                            playprog
-                        ]
-
-                payload = "|".join(data) + "\n"
-
-
-                if ser and ser.is_open:
-                      try:
-                          ser.write(payload.encode("utf-8", errors="ignore"))
-                      except serial.serialutil.SerialException:
-                          icon.notify("COM Port Error")
-                          selectedport = select_port()
-
-                track = info.title
+            track = info.title
 
         await asyncio.sleep(2)
 
