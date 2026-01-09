@@ -36,15 +36,6 @@ Known bugs:
 - Some apps like Firefox dont support timeline reporting, so the timeline has to be estimated.  May not be accurate. 
 
 
-
-- Title scrolling randomly slows down. 
-
-
-
-- If 2 or more applications play media, the display switches between the applications fast
-
-
-
 I am happy if you report any bugs you found or improvement ideas to me.
 
 You can **contact me directly** on:
