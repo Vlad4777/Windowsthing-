@@ -11,12 +11,28 @@ from winrt.windows.media.playback import MediaPlaybackState
 
 running = True
 ser = None
+checked_state = False
 
 def format_mmss(seconds):
     minutes = int(seconds // 60)
     secs = int(seconds % 60)
     return f"{minutes}:{secs:02d}"
 
+def pipecheck(text):
+    if "|" in text:
+        return text.replace("|", "/")
+    else:
+        return text
+
+def on_toggle(icon, item):
+    global checked_state
+    checked_state = not checked_state
+    icon.update_menu()  
+
+def is_checked(item):
+    return checked_state
+        
+        
 def load_port():
     try:
         with open("config.json", "r") as f:
@@ -86,6 +102,7 @@ def build_menu():
         ),
         item("Refresh Ports", refresh_ports),
         item("Reconnect", connect_port),
+        item("Always estimate timeline", on_toggle, checked=is_checked),
         item("Exit", on_exit)
     )
     
@@ -127,8 +144,9 @@ async def get_current_media():
                 app_id = "Chrome"
             
             info = await session.try_get_media_properties_async()
-            title = info.title or ""
-            artist = info.artist or ""
+            title = pipecheck(info.title)
+            artist = pipecheck(info.artist)
+            
             playback_state = session.get_playback_info().playback_status
             playback = None
             timeline = session.get_timeline_properties()
@@ -150,11 +168,7 @@ async def get_current_media():
                     else:
                         position = 0
 
-            if (reported_position_sec == duration_sec
-                or reported_position_sec < 1
-                or int(reported_position_sec) == paused_position and playback_state == 4
-                or abs(reported_position_sec - position) > 5 and playback_state == 4
-                ):
+            if (checked_state == True):
                 position_str = format_mmss(position)
                 
             else:
@@ -172,8 +186,8 @@ async def get_current_media():
                 paused_position = int(reported_position_sec)
             if info:
                     data = [
-                        title,
-                        artist,
+                        title or "",
+                        artist or "",
                         playback,
                         playprog
                     ]
